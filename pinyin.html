@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alat Penanda Nada Pinyin Bahasa Mandarin</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        h1 {
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .section {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #444;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #333;
+        }
+        input::placeholder { color: #bbb; }
+        .tone-row {
+            display: flex;
+            gap: 8px;
+        }
+        .tone-btn {
+            flex: 1;
+            padding: 10px 4px;
+            border: 1.5px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            transition: all 0.2s;
+            color: #666;
+        }
+        .tone-btn:hover { background: #f8f8f8; }
+        .tone-btn.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+        .tone-btn .big { font-size: 22px; display: block; margin-bottom: 2px; }
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .pinyin-result {
+            font-size: 40px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-align: center;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+        .rule-box {
+            background: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 12px 14px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 12px;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #1565C0;
+        }
+        .rule-box b { color: #0d47a1; }
+        .error {
+            color: #d32f2f;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .examples {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .chip {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            font-size: 13px;
+            margin: 4px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .chip:hover {
+            background: #e8e8e8;
+            border-color: #ddd;
+        }
+        .hint {
+            margin-top: 16px;
+            padding: 10px 14px;
+            background: #fff8e1;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #f57c00;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Alat Penanda Nada Pinyin</h1>
+        <p class="subtitle">Masukkan pinyin tanpa nada, pilih nada, dan akan ditandai secara otomatis</p>
+
+        <div class="section">
+            <label>Masukkan pinyin (tanpa nada):</label>
+            <input type="text" id="pinyinInput" placeholder="contoh: zhong, liu, hui, nv" maxlength="10">
+        </div>
+
+        <div class="section">
+            <label>Pilih nada:</label>
+            <div class="tone-row">
+                <button class="tone-btn active" data-tone="1">
+                    <span class="big">ā</span>Nada 1
+                </button>
+                <button class="tone-btn" data-tone="2">
+                    <span class="big">á</span>Nada 2
+                </button>
+                <button class="tone-btn" data-tone="3">
+                    <span class="big">ǎ</span>Nada 3
+                </button>
+                <button class="tone-btn" data-tone="4">
+                    <span class="big">à</span>Nada 4
+                </button>
+            </div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-label">📌 Hasil Penandaan:</div>
+            <div class="pinyin-result" id="pinyinResult"></div>
+            <div class="rule-box" id="ruleBox"></div>
+        </div>
+
+        <div class="error" id="errorMsg"></div>
+
+        <div class="examples">
+            <label>Latihan Cepat (klik untuk mencoba):</label>
+            <div>
+                <span class="chip" onclick="tryExample('zhong',1)">zhōng</span>
+                <span class="chip" onclick="tryExample('liu',2)">liú</span>
+                <span class="chip" onclick="tryExample('hui',3)">huǐ</span>
+                <span class="chip" onclick="tryExample('nv',3)">nǚ</span>
+                <span class="chip" onclick="tryExample('qiu',2)">qiú</span>
+                <span class="chip" onclick="tryExample('shui',4)">shuì</span>
+                <span class="chip" onclick="tryExample('xian',1)">xiān</span>
+                <span class="chip" onclick="tryExample('lao',3)">lǎo</span>
+                <span class="chip" onclick="tryExample('jue',2)">jué</span>
+                <span class="chip" onclick="tryExample('que',4)">què</span>
+            </div>
+        </div>
+
+        <div class="hint">
+            💡 <b>Aturan dasar penandaan nada:</b><br>
+            ① Ada <b>a</b>, tandai di <b>a</b> ／ 
+            ② Tidak ada <b>a</b>, cari <b>o</b> atau <b>e</b> ／ 
+            ③ <b>i</b> dan <b>u</b> berdampingan, tandai di yang belakang ／ 
+            ④ Tandai di <b>i</b>, hapus titiknya
+        </div>
+    </div>
+
+    <script>
+        const toneMarks = {
+            'a': ['ā','á','ǎ','à'],
+            'o': ['ō','ó','ǒ','ò'],
+            'e': ['ē','é','ě','è'],
+            'i': ['ī','í','ǐ','ì'],
+            'u': ['ū','ú','ǔ','ù'],
+            'ü': ['ǖ','ǘ','ǚ','ǜ'],
+            'v': ['ǖ','ǘ','ǚ','ǜ']
+        };
+
+        let selectedTone = 1;
+
+        document.querySelectorAll('.tone-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedTone = parseInt(this.dataset.tone);
+                if (document.getElementById('pinyinInput').value) {
+                    processPinyin();
+                }
+            });
+        });
+
+        document.getElementById('pinyinInput').addEventListener('input', processPinyin);
+
+        function tryExample(pinyin, tone) {
+            document.getElementById('pinyinInput').value = pinyin;
+            document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-tone="${tone}"]`).classList.add('active');
+            selectedTone = tone;
+            processPinyin();
+        }
+
+        function processPinyin() {
+            const input = document.getElementById('pinyinInput').value.toLowerCase().trim();
+            const errorEl = document.getElementById('errorMsg');
+            const resultEl = document.getElementById('resultBox');
+
+            if (!input) {
+                resultEl.style.display = 'none';
+                errorEl.textContent = '';
+                return;
+            }
+
+            if (!/^[a-z]+$/.test(input)) {
+                errorEl.textContent = '⚠ Harap masukkan pinyin dengan huruf murni (tanpa tanda nada atau angka)';
+                resultEl.style.display = 'none';
+                return;
+            }
+
+            errorEl.textContent = '';
+            const result = addToneMark(input, selectedTone);
+
+            if (result.success) {
+                document.getElementById('pinyinResult').textContent = result.result;
+                document.getElementById('ruleBox').innerHTML = result.explanation;
+                resultEl.style.display = 'block';
+            } else {
+                errorEl.textContent = result.error;
+                resultEl.style.display = 'none';
+            }
+        }
+
+        function addToneMark(pinyin, tone) {
+            let s = pinyin.replace(/v/g, 'ü');
+            let markIndex = -1;
+            let markedVowel = '';
+            let explanation = '';
+
+            // Aturan 1: ada a, tandai di a
+            if (s.includes('a')) {
+                markIndex = s.indexOf('a');
+                markedVowel = 'a';
+                explanation = '✅ <b>Aturan ①: Ada a, tandai di a</b><br>Jika vokal <b>a</b> ada dalam韵母, tanda nada harus diletakkan di atas <b>a</b>.';
+            }
+            // Aturan 2: tidak ada a, cari o atau e
+            else if (s.includes('o') || s.includes('e')) {
+                const oIndex = s.indexOf('o');
+                const eIndex = s.indexOf('e');
+                if (oIndex !== -1 && eIndex !== -1) {
+                    markIndex = Math.min(oIndex, eIndex);
+                    markedVowel = s[markIndex];
+                } else if (oIndex !== -1) {
+                    markIndex = oIndex;
+                    markedVowel = 'o';
+                } else {
+                    markIndex = eIndex;
+                    markedVowel = 'e';
+                }
+                explanation = `✅ <b>Aturan ②: Tidak ada a, cari o atau e</b><br>Jika tidak ada <b>a</b>, cari <b>o</b> atau <b>e</b>, lalu tandai di atas <b>${markedVowel}</b>.`;
+            }
+            // Aturan 3: i dan u berdampingan, tandai di yang belakang
+            else if (s.includes('i') && s.includes('u')) {
+                const iIndex = s.indexOf('i');
+                const uIndex = s.indexOf('u');
+                markIndex = Math.max(iIndex, uIndex);
+                markedVowel = s[markIndex];
+                explanation = `✅ <b>Aturan ③: i dan u berdampingan, tandai di belakang</b><br>Jika韵母 adalah <b>iu / ui</b>, tanda nada diletakkan di huruf belakang <b>${markedVowel}</b>.`;
+            }
+            // Aturan 4: vokal tunggal, tandai langsung
+            else {
+                for (let v of ['i', 'u', 'ü']) {
+                    const idx = s.indexOf(v);
+                    if (idx !== -1) {
+                        markIndex = idx;
+                        markedVowel = v;
+                        break;
+                    }
+                }
+                if (markIndex !== -1) {
+                    if (markedVowel === 'i') {
+                        explanation = '✅ <b>Aturan ④: Vokal tunggal, tandai langsung</b><br>Hanya ada <b>i</b>, tandai di atas i (titiknya dihapus).';
+                    } else if (markedVowel === 'ü') {
+                        explanation = '✅ <b>Aturan ④: Vokal tunggal, tandai langsung</b><br>Hanya ada <b>ü</b>, tandai di atas ü.';
+                    } else {
+                        explanation = '✅ <b>Aturan ④: Vokal tunggal, tandai langsung</b><br>Hanya ada <b>u</b>, tandai di atas u.';
+                    }
+                }
+            }
+
+            if (markIndex === -1) {
+                return { success: false, error: 'Vokal yang bisa ditandai tidak ditemukan' };
+            }
+
+            let result = s;
+            if (markedVowel === 'i') {
+                result = result.substring(0, markIndex) + 'i' + result.substring(markIndex + 1);
+            }
+
+            const toned = toneMarks[markedVowel][tone - 1];
+            result = result.substring(0, markIndex) + toned + result.substring(markIndex + 1);
+
+            if ((pinyin.includes('j') || pinyin.includes('q') || pinyin.includes('x') || pinyin.includes('y'))
+                && pinyin.includes('u') && !pinyin.includes('n') && !pinyin.includes('l')) {
+                explanation += '<br><br>💡 <b>Catatan:</b> Setelah <b>j, q, x, y</b>, <b>ü</b> ditulis sebagai <b>u</b> (titik dua dihilangkan), tetapi pengucapannya tetap <b>ü</b>.';
+            }
+
+            return { success: true, result: result, explanation: explanation };
+        }
+    </script>
+</body>
+</html>
